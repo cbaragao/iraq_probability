@@ -14,7 +14,7 @@ SELECT
     type,
     DATEDIFF('day', CAST(strftime(date_time_occ, '%Y-%m') || '-01' AS DATE), last_day(CAST(date_time_occ AS DATE))) AS days_in_month,
     COUNT(1) AS attacks
-FROM './data/IQ_SIGACTs.csv'
+FROM 'data/IQ_SIGACTs.csv'
 GROUP BY date_time_occ,ADM3NAME, type, DATEDIFF('day', CAST(strftime(date_time_occ, '%Y-%m') || '-01' AS DATE), last_day(CAST(date_time_occ AS DATE)))
 ORDER BY date_time_occ, ADM3NAME, type
 """
