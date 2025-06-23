@@ -5,6 +5,12 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import streamlit as st
 
+@st.cache_data
+def load_data():
+    return duckdb.sql("SELECT * FROM 'data/IQ_SIGACTs.csv'").df()
+
+loaded_df = load_data()
+
 # Query distinct values from DuckDB
 # SQL query with FROM clause
 base_query="""
@@ -14,7 +20,7 @@ SELECT
     type,
     DATEDIFF('day', CAST(strftime(date_time_occ, '%Y-%m') || '-01' AS DATE), last_day(CAST(date_time_occ AS DATE))) AS days_in_month,
     COUNT(1) AS attacks
-FROM 'data/IQ_SIGACTs.csv'
+FROM loaded_df
 GROUP BY date_time_occ,ADM3NAME, type, DATEDIFF('day', CAST(strftime(date_time_occ, '%Y-%m') || '-01' AS DATE), last_day(CAST(date_time_occ AS DATE)))
 ORDER BY date_time_occ, ADM3NAME, type
 """
