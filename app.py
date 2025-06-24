@@ -29,8 +29,12 @@ distinct_locs = duckdb.sql("SELECT DISTINCT locality FROM loaded ORDER BY locali
 # Extract as list
 locality_list = distinct_locs['locality'].tolist()
 
+#set slicer columns
+slicer1, slicer2 = st.columns(2)
+
 # Streamlit dropdown
-selected_locality = st.selectbox("Select a locality:", sorted(locality_list))
+with slicer1:
+    selected_locality = st.selectbox("Select a locality:", sorted(locality_list))
 
 # Filter and show data
 filtered = loaded[loaded['locality'] == selected_locality]
@@ -39,13 +43,17 @@ filtered = loaded[loaded['locality'] == selected_locality]
 filtered['week_start'] = pd.to_datetime(filtered['year_week'] + '-0', format='%Y-%U-%w')
 
 min_date, max_date = filtered['week_start'].min(), filtered['week_start'].max()
-start_date, end_date = st.slider(
-    "Date Range:",
-    min_value=min_date.to_pydatetime(),
-    max_value=max_date.to_pydatetime(),
-    value=(min_date.to_pydatetime(), max_date.to_pydatetime())
-)
 
+with slicer2:
+    start_date, end_date = st.slider(
+        "Date Range:",
+        min_value=min_date.to_pydatetime(),
+        max_value=max_date.to_pydatetime(),
+        value=(min_date.to_pydatetime(), max_date.to_pydatetime())
+    )
+
+# Add space between slicers and next elements
+st.markdown("<br>", unsafe_allow_html=True)
 
 filtered = filtered[(filtered['week_start'] >= start_date) & (filtered['week_start'] <= end_date)]
 
