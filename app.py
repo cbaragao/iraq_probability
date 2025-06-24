@@ -130,3 +130,22 @@ with col2:
 
 # Render inside Streamlit
 st.pyplot(fig)
+
+#citation
+# Add a separation line
+st.markdown("---")
+
+# Add data source and citation information
+st.markdown("""
+### Data Sources and Citations
+
+**DATA ACCESS:**  
+[Harvard Dataverse - Iraq War Dataset](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/JRYGFP)
+
+**CITATIONS:**  
+1. Shaver, Andrew, and Alexander K. Bollfrass. "Disorganized Political Violence: A Demonstration Case of Temperature and Insurgency." *International Organization* (2023).
+2. U.S. Central Command. FOIA Release 14-0091(2014).
+
+**DISCLAIMER:**  
+This tool is for informational purposes only and does not constitute legal or medical advice. Consult with a qualified professional for specific claims or health concerns.
+""")
