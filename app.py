@@ -9,13 +9,13 @@ import streamlit as st
 
 st.markdown("""
 ## 🧭 Combat Exposure Modeling Tool
-This interactive app shows **weekly probabilities** of combat-related incidents during the Iraq War..
+This interactive app shows **weekly probabilities** of combat-related incidents during the Iraq War.
 
 **Purpose:** Providing evidence-aligned probability estimates that could support VA’s *“at least as likely as not”* standard.
 
-- 🔵 **Enemy Action** 
-- 🟠 **Explosive Hazard** 
-- ⚫ **Dashed Line @ 0.5** = VA's burden-of-proof threshold
+- 🔴 **Enemy Action** 
+- ⚫ **Explosive Hazard** 
+- 〰️ **Dashed Line @ 0.5** = VA's burden-of-proof threshold
 
 ---
 """)
@@ -59,26 +59,30 @@ df_melted = filtered.melt(
     value_name='adjusted_level'
 )
 
-
-
-
-
-
 # Plotting with seaborn and matplotlib
-fig, ax = plt.subplots(figsize=(12, 6))
+plt.rcParams.update({'font.size': 14})
+
+fig, ax = plt.subplots(figsize=(18, 10))
 sns.set_theme(style='darkgrid')
+
+palette = {
+    'enemy_action_adj': 'red',
+    'explosive_hazard_adj': 'gray'
+}
 
 sns.scatterplot(
     data=df_melted,
     x='week_start',
     y='adjusted_level',
     hue='event_type',
-    ax=ax
+    palette=palette,
+    ax=ax,
+    s=80
 )
 
-ax.set_title(f'Probability of Incident Types Over Time (By Year-Week) – {filtered["locality"].iloc[0]}')
-ax.set_xlabel('')
-ax.set_ylabel('Adjusted Level')
+ax.set_title(f'Probability of Incident Types Over Time (By Year-Week) – {filtered["locality"].iloc[0]}', fontsize=20, fontweight='bold')
+ax.set_xlabel('', fontsize=16)
+ax.set_ylabel('Adjusted Level', fontsize=16)
 
 # Clean up x-axis
 ax.xaxis.set_major_locator(mdates.YearLocator())
@@ -90,7 +94,7 @@ plt.setp(ax.get_xticklabels(), rotation=45)
 ax.axhline(y=0.5, color='black', linestyle='--', linewidth=1.5, label='Threshold = 0.5')
 
 # Legend
-ax.legend(loc='center left', bbox_to_anchor=(1.0, 0.5))
+ax.legend(loc='center left', bbox_to_anchor=(1.0, 0.5), fontsize=14, title='Event Type')
 
 
 
@@ -106,8 +110,15 @@ Each point shows the **probability that at least one event** (e.g., enemy action
 Probabilities are derived from weekly rolling counts of events, smoothed to account for reporting gaps.
 """)
 
-st.metric("Weeks with ≥ 50% Enemy Action", f"{(filtered['enemy_action_adj'] >= 0.5).sum()} weeks")
-st.metric("Weeks with ≥ 50% Explosive Hazards", f"{(filtered['explosive_hazard_adj'] >= 0.5).sum()} weeks")
+# Create two columns with equal width for the metrics
+col1, col2 = st.columns(2)
+
+# Place each metric in its own column
+with col1:
+    st.metric("Weeks with ≥ 50% Enemy Action", f"{(filtered['enemy_action_adj'] >= 0.5).sum()} weeks")
+
+with col2:
+    st.metric("Weeks with ≥ 50% Explosive Hazards", f"{(filtered['explosive_hazard_adj'] >= 0.5).sum()} weeks")
 
 # Render inside Streamlit
 st.pyplot(fig)
